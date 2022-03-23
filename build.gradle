@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+}
+
+version 'unspecified'
+
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.resources.srcDirs = ['src']
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+}
+
+project.ext.jomlVersion = "1.10.1"
+
+dependencies {
+
+    implementation project(':SnapKit')
+    implementation project(':SnapCharts')
+
+    // JOML (Java OpenGL Math Library)
+    implementation "org.joml:joml:${jomlVersion}"
+
+    implementation group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.3.2'
+    implementation group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.3.2'
+
+    //implementation group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.3.2'
+    //implementation 'org.jmonkeyengine:jme3-jogl:3.3.2-stable'
+
+    //implementation 'me.friwi:gluegen-rt:v2.4.0-rc-20210111'
+    //implementation 'me.friwi:jogl-all:v2.4.0-rc-20210111'
+}
+
+/**
+ * Build executable jar SnapChartsAll.jar.
+ *
+ * We could use the standard jar task just by using jar { ... } and deleting 'baseName' and 'with jar' lines.
+ */
+task buildExecJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'snapgl.SnapChartsGL'
+    }
+    archiveBaseName = 'SnapChartsAll'
+    from {
+        //configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
