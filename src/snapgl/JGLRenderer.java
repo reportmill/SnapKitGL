@@ -105,14 +105,14 @@ public class JGLRenderer extends Renderer {
 
         // Get projection transform and set
         Camera3D camera = getCamera();
-        double[] projTrans = camera.getProjectionTransform().toArray();
+        double[] projTrans = camera.getCameraToClip().toArray();
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadMatrixd(projTrans, 0);
 
         // Get camera transform and set
-        double[] cameraTrans = camera.getTransform().toArray();
+        double[] sceneToCamera = camera.getSceneToCamera().toArray();
         gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadMatrixd(cameraTrans, 0);
+        gl.glLoadMatrixd(sceneToCamera, 0);
 
         // Iterate over scene shapes and render each
         Scene3D scene = getScene();
