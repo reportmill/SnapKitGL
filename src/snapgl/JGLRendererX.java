@@ -107,11 +107,11 @@ public class JGLRendererX extends JGLRenderer {
 
         // Set VertexShader Projection Matrix
         Camera3D camera = getCamera();
-        double[] projMatrix = camera.getCameraToClip().toArray();
+        double[] projMatrix = camera.getCameraToClipArray();
         program.setProjectionMatrix(projMatrix);
 
         // Set VertexShader Model Matrix
-        double[] sceneToCamera = camera.getSceneToCamera().toArray();
+        double[] sceneToCamera = camera.getSceneToCameraArray();
         program.setViewMatrix(sceneToCamera);
 
         // Set VertexShader points
