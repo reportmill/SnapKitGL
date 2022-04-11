@@ -69,6 +69,10 @@ public class JGLRendererX extends JGLRenderer {
      */
     protected void renderShape3D(Shape3D aShape3D)
     {
+        // If shape not visible, just return
+        if (!aShape3D.isVisible())
+            return;
+
         // Handle Parent: Iterate over children and recurse
         if (aShape3D instanceof ParentShape) {
             ParentShape parentShape = (ParentShape) aShape3D;
