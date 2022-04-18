@@ -108,7 +108,7 @@ public class JGLRender implements GLEventListener {
     public void init(GLAutoDrawable drawable)
     {
         GL2 gl2 = getGL2();
-        gl2.glClearColor(1f, 1f, 1f, 1f);
+        gl2.glClearColor(0f, 0f, 0f, 0f);
         gl2.glEnable(GL.GL_DEPTH_TEST);
         gl2.glEnable(GL.GL_CULL_FACE);
     }
