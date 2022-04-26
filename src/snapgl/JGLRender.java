@@ -1,7 +1,9 @@
+/*
+ * Copyright (c) 2010, ReportMill Software. All rights reserved.
+ */
 package snapgl;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
-import com.jogamp.opengl.util.gl2.GLUT;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -18,9 +20,6 @@ public class JGLRender implements GLEventListener {
 
     // Used to read rendered GL to BufferedImage
     private AWTGLReadBufferUtil  _glReadUtil;
-
-    // A GLUT instance
-    private GLUT  _glut;
 
     /**
      * Constructor.
@@ -83,11 +82,6 @@ public class JGLRender implements GLEventListener {
         GL2 gl2 = gl.getGL2();
         return gl2;
     }
-
-    /**
-     * Returns a GLUT.
-     */
-    protected GLUT getGlut()  { return _glut != null ? _glut : (_glut = new GLUT()); }
 
     /**
      * Triggers render.

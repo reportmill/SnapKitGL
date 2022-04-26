@@ -13,12 +13,21 @@ import java.nio.DoubleBuffer;
  */
 public class JoglUtils {
 
+    // A GLUT instance
+    private static GLUT  _glut;
+
+    /**
+     * Returns a GLUT.
+     */
+    public static GLUT getGlut()  { return _glut != null ? _glut : (_glut = new GLUT()); }
+
     /**
      * Render axis.
      */
-    public static void render3DAxisLines(GL2 gl, GLUT glut, double aRadius, double aHeight)
+    public static void render3DAxisLines(GL2 gl, double aRadius, double aHeight)
     {
         // Get info
+        GLUT glut = getGlut();
         int slices = 32;
         int stacks = 32;
 

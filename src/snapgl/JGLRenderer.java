@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2010, ReportMill Software. All rights reserved.
+ */
 package snapgl;
 import snap.gfx.Color;
 import snap.gfx.Painter;
@@ -119,8 +122,7 @@ public class JGLRenderer extends Renderer {
         renderShape3D(scene);
 
         // Paint axes
-        JGLRender renderJOGL = getRenderJOGL();
-        JoglUtils.render3DAxisLines(gl, renderJOGL.getGlut(), 3, 100);
+        JoglUtils.render3DAxisLines(gl, 3, 100);
     }
 
     /**
