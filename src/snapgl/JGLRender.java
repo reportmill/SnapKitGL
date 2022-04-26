@@ -49,7 +49,7 @@ public class JGLRender implements GLEventListener {
     {
         // Handle GLWindow
         GLAutoDrawable drawable = getDrawable();
-        JoglUtils.resizeDrawable(drawable, aWidth, aHeight);
+        DrawableUtils.resizeDrawable(drawable, aWidth, aHeight);
 
         // Reset sizes and clear ReadUtil
         _width = aWidth;
@@ -66,7 +66,7 @@ public class JGLRender implements GLEventListener {
         if (_drawable != null) return _drawable;
 
         // Create Drawable
-        GLAutoDrawable drawable = JoglUtils.createOffScreenDrawableDefault(null, _width, _height);
+        GLAutoDrawable drawable = DrawableUtils.createOffScreenDrawableDefault(null, _width, _height);
 
         // Add GLEventListener, set and return
         drawable.addGLEventListener(this);
