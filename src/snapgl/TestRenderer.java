@@ -33,7 +33,7 @@ public class TestRenderer extends RenderImage {
         _contentPane.setPreferredSize(new Dimension(BOX_WIDTH, BOX_HEIGHT));
 
         // Create JFrame and show
-        JFrame frame = new JFrame("Simple LWJGL Test");
+        JFrame frame = new JFrame("Simple JOGL Test");
         frame.setResizable(false);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -56,15 +56,11 @@ public class TestRenderer extends RenderImage {
         SwingUtilities.invokeLater(() -> renderLoop());
     }
 
-    public void display(GLAutoDrawable drawable)
-    {
-        render3D();
-    }
-
     /**
-     * Called to execute custom OpenGL in given RenderJOGL.
+     * Override to do custom rendering.
      */
-    protected void render3D()
+    @Override
+    public void display(GLAutoDrawable drawable)
     {
         GL2 gl = getGL2();
 

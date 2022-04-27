@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 /**
  * This class renders OpenGL to image or Graphics using JOGL.
  */
-public class JoglTest implements GLEventListener {
+public class TestJOGL implements GLEventListener {
 
     // The window size
     protected int  _width = 500, _height = 500;
@@ -25,7 +25,7 @@ public class JoglTest implements GLEventListener {
     /**
      * Constructor.
      */
-    public JoglTest()
+    public TestJOGL()
     {
         // Create panel to paint 3D
         _contentPane = new JPanel() {
@@ -182,6 +182,6 @@ public class JoglTest implements GLEventListener {
      */
     public static void main(String[] args)
     {
-        new JoglTest();
+        new TestJOGL();
     }
 }
