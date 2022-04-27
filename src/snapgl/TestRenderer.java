@@ -9,7 +9,7 @@ import java.awt.*;
 /**
  * A class to test RenderJOGL.
  */
-public class TestRenderer extends JGLRender {
+public class TestRenderer extends RenderImage {
 
     // Panel
     private JPanel  _contentPane;
@@ -29,7 +29,7 @@ public class TestRenderer extends JGLRender {
         // Create panel to paint 3D
         _contentPane = new JPanel() {
             protected void paintComponent(Graphics aGfx) {
-                paint3DToGraphics2D((Graphics2D) aGfx); } };
+                paintToGraphics2D((Graphics2D) aGfx); } };
         _contentPane.setPreferredSize(new Dimension(BOX_WIDTH, BOX_HEIGHT));
 
         // Create JFrame and show
@@ -51,7 +51,7 @@ public class TestRenderer extends JGLRender {
      */
     void renderLoop()
     {
-        render3DAll();
+        renderAll();
         _contentPane.repaint();
         SwingUtilities.invokeLater(() -> renderLoop());
     }

@@ -14,8 +14,8 @@ import snap.util.PropChange;
  */
 public class JGLRenderer extends Renderer {
 
-    // A RenderJOGL
-    private JGLRender _renderJOGL;
+    // A RenderImage
+    private RenderImage  _renderImage;
 
     // Constant for name
     private static final String RENDERER_NAME = "JOGL";
@@ -35,27 +35,27 @@ public class JGLRenderer extends Renderer {
     public String getName()  { return RENDERER_NAME; }
 
     /**
-     * Returns the RenderJOGL.
+     * Returns the RenderImage.
      */
-    public JGLRender getRenderJOGL()
+    public RenderImage getRenderImage()
     {
         // If already set, just return
-        if (_renderJOGL != null) return _renderJOGL;
+        if (_renderImage != null) return _renderImage;
 
-        // Create and configure RenderJOGL
+        // Get camera view size
         Camera3D camera = getCamera();
         int viewW = (int) Math.round(camera.getViewWidth());
         int viewH = (int) Math.round(camera.getViewHeight());
 
-        // Create RenderJOGL for size
-        JGLRender renderJOGL = new JGLRender(viewW, viewH) {
+        // Create RenderImage for size
+        RenderImage renderImage = new RenderImage(viewW, viewH) {
             public void display(GLAutoDrawable drawable) {
                 render3D();
             }
         };
 
         // Set, return
-        return _renderJOGL = renderJOGL;
+        return _renderImage = renderImage;
     }
 
     /**
@@ -63,7 +63,7 @@ public class JGLRenderer extends Renderer {
      */
     public GLAutoDrawable getDrawable()
     {
-        JGLRender renderJOGL = getRenderJOGL();
+        RenderImage renderJOGL = getRenderImage();
         return renderJOGL.getDrawable();
     }
 
@@ -72,8 +72,8 @@ public class JGLRenderer extends Renderer {
      */
     public GL2 getGL2()
     {
-        JGLRender renderJOGL = getRenderJOGL();
-        return renderJOGL.getGL2();
+        RenderImage renderImage = getRenderImage();
+        return renderImage.getGL2();
     }
 
     /**
@@ -82,13 +82,9 @@ public class JGLRenderer extends Renderer {
     @Override
     public void renderAll(Painter aPainter)
     {
-        // Render 3D
-        JGLRender renderJOGL = getRenderJOGL();
-        renderJOGL.render3DAll();
-
-        // Get Graphics2D and paint 3D to it
+        RenderImage renderImage = getRenderImage();
         Graphics2D gfx = (Graphics2D) aPainter.getNative();
-        renderJOGL.paint3DToGraphics2D(gfx);
+        renderImage.renderAndPaintToGraphics2D(gfx);
     }
 
     /**
@@ -179,7 +175,7 @@ public class JGLRenderer extends Renderer {
             Color color = aVertexArray.getColor();
             if (color != null)
                 gl.glColor4d(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-            else System.err.println("RendererJOGL.renderVertexArray: No colors defined for VertexArray");
+            else System.err.println("JGLRenderer.renderVertexArray: No colors defined for VertexArray");
         }
 
         // Iterate over triangles and paint
@@ -230,13 +226,13 @@ public class JGLRenderer extends Renderer {
     private void resizeDrawableToCameraViewSize()
     {
         // If RenderJOGL not set, just return
-        if (_renderJOGL == null) return;
+        if (_renderImage == null) return;
 
         // Get Camera ViewSize and set
         Camera3D camera = getCamera();
         int viewW = (int) Math.round(camera.getViewWidth());
         int viewH = (int) Math.round(camera.getViewHeight());
-        _renderJOGL.setSize(viewW, viewH);
+        _renderImage.setSize(viewW, viewH);
     }
 
     /**
@@ -256,7 +252,7 @@ public class JGLRenderer extends Renderer {
     }
 
     /**
-     * A RendererFactory implementation for RendererJogl.
+     * A RendererFactory implementation for JGLRenderer.
      */
     public static class JGLRendererFactory extends RendererFactory {
 
