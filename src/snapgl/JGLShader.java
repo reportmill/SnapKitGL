@@ -66,14 +66,20 @@ public class JGLShader {
     public String getSourceName()
     {
         // Handle Vertex Shaders:
-        if (_type == ShaderType.Vertex && _name.equals("Points_Color"))
-            return "Points_Color.vs";
-        if (_type == ShaderType.Vertex && _name.equals("Points_Colors"))
-            return "Points_Colors.vs";
+        if (_type == ShaderType.Vertex) {
+            switch (_name) {
+                case "Points_Color": return "Points_Color.vs";
+                case "Points_Colors": return "Points_Colors.vs";
+                case "Points_Color_Tex": return "Points_Color_Tex.vs";
+            }
+        }
 
         // Handle Fragment Shaders
-        if (_type == ShaderType.Fragment)
+        if (_type == ShaderType.Fragment) {
+            if (_name.equals("Points_Color_Tex"))
+                return "Points_Color_Tex.fs";
             return "General.fs";
+        }
 
         // Something went wrong
         return null;

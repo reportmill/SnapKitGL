@@ -1,6 +1,7 @@
 package snapgl;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.util.texture.Texture;
 import snap.gfx.Color;
 import snap.gfx3d.VertexArray;
 import snap.util.ArrayUtils;
@@ -29,11 +30,17 @@ public class JGLProgram {
     // The last colorsArray
     private float[]  _colorsArray;
 
+    // The last texCoordsArray
+    private float[]  _texCoordsArray;
+
     // The PointAttr
     private int  _pointAttr;
 
     // The ColorAttr
     private int  _colorAttr;
+
+    // The TexCoordAttr
+    private int  _texCoordAttr;
 
     /**
      * Creates a ShaderProgram for VertexArray.
@@ -218,6 +225,47 @@ public class JGLProgram {
     }
 
     /**
+     * Sets the texture coords array.
+     */
+    public void setTexCoords(float[] texCoordsArray)
+    {
+        // Get program info
+        int programId = getId();
+        GL2 gl2 = _rjx.getGL2();
+
+        // Set TexCoordsArray
+        _texCoordsArray = texCoordsArray;
+
+        // Get vertTexCoord attribute and enable
+        _texCoordAttr = gl2.glGetAttribLocation(programId, "vertTexCoord");
+        gl2.glEnableVertexAttribArray(_texCoordAttr);
+
+        // Get matrix as 4fv
+        FloatBuffer texCoordsBuffer = Buffers.newDirectFloatBuffer(texCoordsArray.length);
+        texCoordsBuffer.put(texCoordsArray);
+        gl2.glVertexAttribPointer(_texCoordAttr, 2, GL2.GL_FLOAT, false, 0, texCoordsBuffer.rewind());
+    }
+
+    /**
+     * Sets the texture coords array.
+     */
+    public void setTexure(Texture aTexture)
+    {
+        // Get program info
+        int programId = getId();
+        GL2 gl2 = _rjx.getGL2();
+
+        // Get fragTexture attribute
+        int textureUnLoc = gl2.glGetUniformLocation(programId, "fragTexture");
+
+        // Enable/bind
+        gl2.glActiveTexture(GL2.GL_TEXTURE0);
+        aTexture.enable(gl2);
+        aTexture.bind(gl2);
+        gl2.glUniform1i(textureUnLoc, 0);
+    }
+
+    /**
      * Runs the program.
      */
     public void runProgram()
@@ -233,13 +281,15 @@ public class JGLProgram {
         gl2.glDisableVertexAttribArray(_pointAttr);
         if (_colorsArray != null)
             gl2.glDisableVertexAttribArray(_colorAttr);
+        if (_texCoordsArray != null)
+            gl2.glDisableVertexAttribArray(_texCoordAttr);
 
         // Remove shader code from current rendering state
         gl2.glUseProgram(0);
 
         // Clear vars
-        _pointsArray = _colorsArray = null;
-        _pointAttr = _colorAttr = -1;
+        _pointsArray = _colorsArray = _texCoordsArray = null;
+        _pointAttr = _colorAttr = _texCoordAttr = -1;
     }
 
     /**

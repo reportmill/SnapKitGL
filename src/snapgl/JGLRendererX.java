@@ -2,8 +2,12 @@ package snapgl;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import snap.gfx.Color;
+import snap.gfx.Image;
 import snap.gfx3d.*;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +24,9 @@ public class JGLRendererX extends JGLRenderer {
 
     // A map of fragment shaders
     private Map<String, JGLShader>  _fragShaders = new HashMap<>();
+
+    // A map of textures
+    private Map<Texture,com.jogamp.opengl.util.texture.Texture>  _textures = new HashMap<>();
 
     /**
      * Constructor.
@@ -129,6 +136,15 @@ public class JGLRendererX extends JGLRenderer {
             program.setColors(colors);
         else program.setColor(color);
 
+        // Set VertexShader texture coords
+        Texture texture = aVertexArray.getTexture();
+        float[] texCoords = aVertexArray.getTexCoordsArray();
+        if (texture != null && texCoords != null && texCoords.length > 0) {
+            com.jogamp.opengl.util.texture.Texture joglTexture = getTexture(texture);
+            program.setTexure(joglTexture);
+            program.setTexCoords(texCoords);
+        }
+
         // Run program
         program.runProgram();
 
@@ -189,11 +205,37 @@ public class JGLRendererX extends JGLRenderer {
     }
 
     /**
+     * Returns a JOGL texture for given Snap texture.
+     */
+    public com.jogamp.opengl.util.texture.Texture getTexture(Texture aTexture)
+    {
+        // Get from Textures map (Just return if found)
+        com.jogamp.opengl.util.texture.Texture joglTexture = _textures.get(aTexture);
+        if (joglTexture != null)
+            return joglTexture;
+
+        // Create JOGLTexture from image
+        GLProfile profile = getDrawable().getGLProfile();
+        Image image = aTexture.getImage();
+        BufferedImage awtImage = (BufferedImage) image.getNative();
+        joglTexture = AWTTextureIO.newTexture(profile, awtImage, false);
+
+        // Add to textures map and return
+        _textures.put(aTexture, joglTexture);
+        return joglTexture;
+    }
+
+    /**
      * Returns a unique string.
      */
     public String getShaderString(VertexArray aVertexArray)
     {
         boolean hasColors = aVertexArray.isColorsArraySet();
+        boolean hasTexCoords = aVertexArray.getTexCoordsArray().length > 0;
+
+        if (hasTexCoords)
+            return "Points_Color_Tex";
+
         return hasColors ? "Points_Colors" : "Points_Color";
     }
 }
