@@ -6,6 +6,7 @@ import snap.gfx.Color;
 import snap.gfx3d.VertexArray;
 import snap.util.ArrayUtils;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  * This class represents an OpenGL shader program.
@@ -32,6 +33,10 @@ public class JGLProgram {
 
     // The last texCoordsArray
     private float[]  _texCoordsArray;
+
+    // The last indexArray
+    private int[]  _indexArray;
+    private IntBuffer  _indexBuffer;
 
     // The PointAttr
     private int  _pointAttr;
@@ -247,9 +252,23 @@ public class JGLProgram {
     }
 
     /**
+     * Sets the index array.
+     */
+    public void setIndexArray(int[] indexArray)
+    {
+        // Set IndexArray
+        _indexArray = indexArray;
+
+        // Create IndexBuffer and load/rewind
+        _indexBuffer = Buffers.newDirectIntBuffer(indexArray.length);
+        _indexBuffer.put(indexArray);
+        _indexBuffer.rewind();
+    }
+
+    /**
      * Sets the texture coords array.
      */
-    public void setTexure(Texture aTexture)
+    public void setTexture(Texture aTexture)
     {
         // Get program info
         int programId = getId();
@@ -273,9 +292,15 @@ public class JGLProgram {
         // Get program info
         GL2 gl2 = _rjx.getGL2();
 
-        // Get PointCount and run
-        int triangleCount = _pointsArray.length / 3;
-        gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, triangleCount);
+        // If IndexArray provided, drawElements with IndexBuffer
+        if (_indexArray != null)
+            gl2.glDrawElements(GL2.GL_TRIANGLES, _indexArray.length, GL2.GL_UNSIGNED_INT, _indexBuffer);
+
+        // Otherwise, get PointCount and run
+        else {
+            int triangleCount = _pointsArray.length / 3;
+            gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, triangleCount);
+        }
 
         // Disable attributes
         gl2.glDisableVertexAttribArray(_pointAttr);
@@ -289,6 +314,7 @@ public class JGLProgram {
 
         // Clear vars
         _pointsArray = _colorsArray = _texCoordsArray = null;
+        _indexArray = null;
         _pointAttr = _colorAttr = _texCoordAttr = -1;
     }
 

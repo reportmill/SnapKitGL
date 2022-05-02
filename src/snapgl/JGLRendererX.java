@@ -3,6 +3,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import snap.gfx.Color;
 import snap.gfx.Image;
@@ -141,8 +142,14 @@ public class JGLRendererX extends JGLRenderer {
         float[] texCoords = aVertexArray.getTexCoordsArray();
         if (texture != null && texCoords != null && texCoords.length > 0) {
             com.jogamp.opengl.util.texture.Texture joglTexture = getTexture(texture);
-            program.setTexure(joglTexture);
+            program.setTexture(joglTexture);
             program.setTexCoords(texCoords);
+        }
+
+        // Set IndexArray
+        if (aVertexArray.isIndexArraySet()) {
+            int[] indexArray = aVertexArray.getIndexArray();
+            program.setIndexArray(indexArray);
         }
 
         // Run program
@@ -214,10 +221,13 @@ public class JGLRendererX extends JGLRenderer {
         if (joglTexture != null)
             return joglTexture;
 
-        // Create JOGLTexture from image
-        GLProfile profile = getDrawable().getGLProfile();
+        // Get BufferedImage and flip for OpenGL
         Image image = aTexture.getImage();
         BufferedImage awtImage = (BufferedImage) image.getNative();
+        ImageUtil.flipImageVertically(awtImage);
+
+        // Create JOGLTexture from image
+        GLProfile profile = getDrawable().getGLProfile();
         joglTexture = AWTTextureIO.newTexture(profile, awtImage, false);
 
         // Add to textures map and return
