@@ -127,19 +127,19 @@ public class JGLRendererX extends JGLRenderer {
         program.setViewMatrix(sceneToCamera);
 
         // Set VertexShader points
-        float[] pointsArray = aVertexArray.getPointsArray();
+        float[] pointsArray = aVertexArray.getPointArray();
         program.setPoints(pointsArray);
 
         // Set VertexShader color
         Color color = aVertexArray.getColor();
-        float[] colors = aVertexArray.getColorsArray();
-        if (aVertexArray.isColorsArraySet())
+        float[] colors = aVertexArray.getColorArray();
+        if (aVertexArray.isColorArraySet())
             program.setColors(colors);
         else program.setColor(color);
 
         // Set VertexShader texture coords
         Texture texture = aVertexArray.getTexture();
-        float[] texCoords = aVertexArray.getTexCoordsArray();
+        float[] texCoords = aVertexArray.getTexCoordArray();
         if (texture != null && texCoords != null && texCoords.length > 0) {
             com.jogamp.opengl.util.texture.Texture joglTexture = getTexture(texture);
             program.setTexture(joglTexture);
@@ -240,8 +240,8 @@ public class JGLRendererX extends JGLRenderer {
      */
     public String getShaderString(VertexArray aVertexArray)
     {
-        boolean hasColors = aVertexArray.isColorsArraySet();
-        boolean hasTexCoords = aVertexArray.getTexCoordsArray().length > 0;
+        boolean hasColors = aVertexArray.isColorArraySet();
+        boolean hasTexCoords = aVertexArray.getTexCoordArray().length > 0;
 
         if (hasTexCoords)
             return "Points_Color_Tex";

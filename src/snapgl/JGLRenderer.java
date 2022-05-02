@@ -154,12 +154,12 @@ public class JGLRenderer extends Renderer {
     protected void renderVertexArray(VertexArray aVertexArray)
     {
         // Get Vertex points components array
-        float[] pointsArray = aVertexArray.getPointsArray();
+        float[] pointsArray = aVertexArray.getPointArray();
         if (pointsArray.length == 0)
             return;
 
         // Get Vertex color components array
-        float[] colorsArray = aVertexArray.isColorsArraySet() ? aVertexArray.getColorsArray() : null;
+        float[] colorsArray = aVertexArray.isColorArraySet() ? aVertexArray.getColorArray() : null;
 
         // Get GL
         GL2 gl = getGL2();
