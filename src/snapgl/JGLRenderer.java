@@ -23,7 +23,7 @@ public class JGLRenderer extends Renderer {
     /**
      * Constructor.
      */
-    public JGLRenderer(Camera3D aCamera)
+    public JGLRenderer(Camera aCamera)
     {
         super(aCamera);
     }
@@ -43,7 +43,7 @@ public class JGLRenderer extends Renderer {
         if (_renderImage != null) return _renderImage;
 
         // Get camera view size
-        Camera3D camera = getCamera();
+        Camera camera = getCamera();
         int viewW = (int) Math.round(camera.getViewWidth());
         int viewH = (int) Math.round(camera.getViewHeight());
 
@@ -103,7 +103,7 @@ public class JGLRenderer extends Renderer {
         gl.glViewport(0, 0, viewW, viewH);
 
         // Get projection transform and set
-        Camera3D camera = getCamera();
+        Camera camera = getCamera();
         double[] projTrans = camera.getCameraToClipArray();
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadMatrixd(projTrans, 0);
@@ -215,7 +215,7 @@ public class JGLRenderer extends Renderer {
 
         // Handle ViewWidth, ViewHeight special
         String propName = aPC.getPropName();
-        if (propName == Camera3D.ViewWidth_Prop || propName == Camera3D.ViewHeight_Prop) {
+        if (propName == Camera.ViewWidth_Prop || propName == Camera.ViewHeight_Prop) {
             resizeDrawableToCameraViewSize();
         }
     }
@@ -229,7 +229,7 @@ public class JGLRenderer extends Renderer {
         if (_renderImage == null) return;
 
         // Get Camera ViewSize and set
-        Camera3D camera = getCamera();
+        Camera camera = getCamera();
         int viewW = (int) Math.round(camera.getViewWidth());
         int viewH = (int) Math.round(camera.getViewHeight());
         _renderImage.setSize(viewW, viewH);
@@ -264,7 +264,7 @@ public class JGLRenderer extends Renderer {
         /**
          * Returns a new default renderer.
          */
-        public Renderer newRenderer(Camera3D aCamera)
+        public Renderer newRenderer(Camera aCamera)
         {
             return new JGLRendererX(aCamera);
         }

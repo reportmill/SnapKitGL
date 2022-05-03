@@ -32,7 +32,7 @@ public class JGLRendererX extends JGLRenderer {
     /**
      * Constructor.
      */
-    public JGLRendererX(Camera3D aCamera)
+    public JGLRendererX(Camera aCamera)
     {
         super(aCamera);
     }
@@ -118,7 +118,7 @@ public class JGLRendererX extends JGLRenderer {
         program.useProgram();
 
         // Set VertexShader Projection Matrix
-        Camera3D camera = getCamera();
+        Camera camera = getCamera();
         double[] projMatrix = camera.getCameraToClipArray();
         program.setProjectionMatrix(projMatrix);
 
