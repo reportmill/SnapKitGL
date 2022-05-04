@@ -45,6 +45,9 @@ public class RenderImage implements GLEventListener {
      */
     public void setSize(int aWidth, int aHeight)
     {
+        // If already at size, just return
+        if (aWidth == _width && aHeight == _height) return;
+
         // Handle GLWindow
         GLAutoDrawable drawable = getDrawable();
         DrawableUtils.resizeDrawable(drawable, aWidth, aHeight);
