@@ -224,7 +224,12 @@ public class JGLRendererX extends JGLRenderer {
         // Get BufferedImage and flip for OpenGL
         Image image = aTexture.getImage();
         BufferedImage awtImage = (BufferedImage) image.getNative();
-        ImageUtil.flipImageVertically(awtImage);
+
+        // Make sure texture is flipped
+        if (!aTexture.isFlipped()) {
+            ImageUtil.flipImageVertically(awtImage);
+            aTexture.setFlipped(true);
+        }
 
         // Create JOGLTexture from image
         GLProfile profile = getDrawable().getGLProfile();
