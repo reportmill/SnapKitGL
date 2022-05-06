@@ -107,11 +107,6 @@ public class RenderImage implements GLEventListener {
 
         // Paint image
         aGfx.drawImage(img, 0, 0, _width, _height, null);
-
-        // Paint frame
-        aGfx.setColor(Color.LIGHT_GRAY);
-        aGfx.setStroke(new BasicStroke());
-        aGfx.drawRect(0, 0, _width, _height);
     }
 
     /**
