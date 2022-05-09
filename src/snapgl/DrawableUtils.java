@@ -111,7 +111,14 @@ public class DrawableUtils {
     {
         // Handle GLWindow
         if (drawable instanceof GLWindow) {
+
+            // Get window and make sure context is set
             GLWindow glWindow = (GLWindow) drawable;
+            GL gl = glWindow.getGL();
+            GLContext glc = gl.getContext();
+            glc.makeCurrent();
+
+            // Resize window
             new GLDrawableHelper().reshape(glWindow, 0, 0, aWidth, aHeight);
         }
 
