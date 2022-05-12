@@ -140,10 +140,10 @@ public class JGLRenderer extends Renderer {
 
         // Handle child: Get VertexArray and render
         else {
-            VertexArray vertexArray = aShape3D.getVertexArray();
-            while (vertexArray != null) {
-                renderVertexArray(vertexArray);
-                vertexArray = vertexArray.getNext();
+            VertexArray triangleArray = aShape3D.getTriangleArray();
+            while (triangleArray != null) {
+                renderTriangleArray(triangleArray);
+                triangleArray = triangleArray.getNext();
             }
         }
     }
@@ -151,19 +151,19 @@ public class JGLRenderer extends Renderer {
     /**
      * Renders a VertexBuffer of triangles.
      */
-    protected void renderVertexArray(VertexArray aVertexArray)
+    protected void renderTriangleArray(VertexArray aTriangleArray)
     {
         // Get Vertex points components array
-        float[] pointsArray = aVertexArray.getPointArray();
+        float[] pointsArray = aTriangleArray.getPointArray();
         if (pointsArray.length == 0)
             return;
 
         // Get Vertex color components array
-        float[] colorsArray = aVertexArray.isColorArraySet() ? aVertexArray.getColorArray() : null;
+        float[] colorsArray = aTriangleArray.isColorArraySet() ? aTriangleArray.getColorArray() : null;
 
         // Get GL
         GL2 gl = getGL2();
-        boolean doubleSided = aVertexArray.isDoubleSided();
+        boolean doubleSided = aTriangleArray.isDoubleSided();
         if (doubleSided)
             gl.glDisable(GL.GL_CULL_FACE);
 
@@ -172,14 +172,14 @@ public class JGLRenderer extends Renderer {
 
         // If no color components, set global color
         if (colorsArray == null) {
-            Color color = aVertexArray.getColor();
+            Color color = aTriangleArray.getColor();
             if (color != null)
                 gl.glColor4d(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
             else System.err.println("JGLRenderer.renderVertexArray: No colors defined for VertexArray");
         }
 
         // Iterate over triangles and paint
-        for (int i = 0, iMax = aVertexArray.getPointCount(), pointIndex = 0, colorIndex = 0; i < iMax; i++) {
+        for (int i = 0, iMax = aTriangleArray.getPointCount(), pointIndex = 0, colorIndex = 0; i < iMax; i++) {
 
             // Get/set vertex color (if present)
             if (colorsArray != null) {

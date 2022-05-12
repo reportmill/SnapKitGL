@@ -91,10 +91,10 @@ public class JGLRendererX extends JGLRenderer {
 
         // Handle child: Get VertexArray and render
         else {
-            VertexArray vertexArray = aShape3D.getVertexArray();
-            while (vertexArray != null) {
-                renderVertexArray(vertexArray);
-                vertexArray = vertexArray.getNext();
+            VertexArray triangleArray = aShape3D.getTriangleArray();
+            while (triangleArray != null) {
+                renderTriangleArray(triangleArray);
+                triangleArray = triangleArray.getNext();
             }
         }
     }
@@ -103,16 +103,16 @@ public class JGLRendererX extends JGLRenderer {
      * Override to render using modern OpenGL (shaders).
      */
     @Override
-    protected void renderVertexArray(VertexArray aVertexArray)
+    protected void renderTriangleArray(VertexArray aTriangleArray)
     {
         // Get GL
         GL2 gl = getGL2();
-        boolean doubleSided = aVertexArray.isDoubleSided();
+        boolean doubleSided = aTriangleArray.isDoubleSided();
         if (doubleSided)
             gl.glDisable(GL.GL_CULL_FACE);
 
         // Get shader Program
-        JGLProgram program = getProgram(aVertexArray);
+        JGLProgram program = getProgram(aTriangleArray);
 
         // Use this program
         program.useProgram();
@@ -127,19 +127,19 @@ public class JGLRendererX extends JGLRenderer {
         program.setViewMatrix(sceneToCamera);
 
         // Set VertexShader points
-        float[] pointsArray = aVertexArray.getPointArray();
+        float[] pointsArray = aTriangleArray.getPointArray();
         program.setPoints(pointsArray);
 
         // Set VertexShader color
-        Color color = aVertexArray.getColor();
-        float[] colors = aVertexArray.getColorArray();
-        if (aVertexArray.isColorArraySet())
+        Color color = aTriangleArray.getColor();
+        float[] colors = aTriangleArray.getColorArray();
+        if (aTriangleArray.isColorArraySet())
             program.setColors(colors);
         else program.setColor(color);
 
         // Set VertexShader texture coords
-        Texture texture = aVertexArray.getTexture();
-        float[] texCoords = aVertexArray.getTexCoordArray();
+        Texture texture = aTriangleArray.getTexture();
+        float[] texCoords = aTriangleArray.getTexCoordArray();
         if (texture != null && texCoords != null && texCoords.length > 0) {
             com.jogamp.opengl.util.texture.Texture joglTexture = getTexture(texture);
             program.setTexture(joglTexture);
@@ -147,8 +147,8 @@ public class JGLRendererX extends JGLRenderer {
         }
 
         // Set IndexArray
-        if (aVertexArray.isIndexArraySet()) {
-            int[] indexArray = aVertexArray.getIndexArray();
+        if (aTriangleArray.isIndexArraySet()) {
+            int[] indexArray = aTriangleArray.getIndexArray();
             program.setIndexArray(indexArray);
         }
 
