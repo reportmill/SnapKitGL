@@ -102,8 +102,9 @@ public class JGLRenderer extends Renderer {
      */
     public GL2 getGL2()
     {
-        RenderImage renderImage = getRenderImage();
-        return renderImage.getGL2();
+        GLAutoDrawable drawable = getDrawable();
+        GL gl = drawable.getGL();
+        return gl.getGL2();
     }
 
     /**
