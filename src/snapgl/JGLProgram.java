@@ -14,7 +14,7 @@ import java.nio.IntBuffer;
 public class JGLProgram {
 
     // The Renderer
-    private JGLRendererX _rjx;
+    private JGLRenderer  _rjx;
 
     // The id
     private int  _id;
@@ -50,7 +50,7 @@ public class JGLProgram {
     /**
      * Creates a ShaderProgram for VertexArray.
      */
-    public JGLProgram(VertexArray aVA, JGLRendererX aRJX)
+    public JGLProgram(VertexArray aVA, JGLRenderer aRJX)
     {
         _rjx = aRJX;
 

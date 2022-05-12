@@ -2,10 +2,17 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package snapgl;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import snap.gfx.Color;
+import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.gfx3d.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.jogamp.opengl.*;
 import snap.util.PropChange;
 
@@ -16,6 +23,18 @@ public class JGLRenderer extends Renderer {
 
     // A RenderImage
     private RenderImage  _renderImage;
+
+    // A map of shader programs
+    private Map<String, JGLProgram> _programs = new HashMap<>();
+
+    // A map of vertex shaders
+    private Map<String, JGLShader>  _vertShaders = new HashMap<>();
+
+    // A map of fragment shaders
+    private Map<String, JGLShader>  _fragShaders = new HashMap<>();
+
+    // A map of textures
+    private Map<Texture,com.jogamp.opengl.util.texture.Texture>  _textures = new HashMap<>();
 
     // Constant for name
     private static final String RENDERER_NAME = "JOGL";
@@ -35,6 +54,17 @@ public class JGLRenderer extends Renderer {
     public String getName()  { return RENDERER_NAME; }
 
     /**
+     * Override to render with RenderImage and paint to Graphics2D.
+     */
+    @Override
+    public void renderAndPaint(Painter aPainter)
+    {
+        RenderImage renderImage = getRenderImage();
+        Graphics2D gfx = (Graphics2D) aPainter.getNative();
+        renderImage.renderAndPaintToGraphics2D(gfx);
+    }
+
+    /**
      * Returns the RenderImage.
      */
     public RenderImage getRenderImage()
@@ -50,7 +80,7 @@ public class JGLRenderer extends Renderer {
         // Create RenderImage for size
         RenderImage renderImage = new RenderImage(viewW, viewH) {
             public void display(GLAutoDrawable drawable) {
-                render3D();
+                JGLRenderer.this.renderAll();
             }
         };
 
@@ -77,20 +107,9 @@ public class JGLRenderer extends Renderer {
     }
 
     /**
-     * Override to render scene.
+     * The top level render method.
      */
-    @Override
-    public void renderAll(Painter aPainter)
-    {
-        RenderImage renderImage = getRenderImage();
-        Graphics2D gfx = (Graphics2D) aPainter.getNative();
-        renderImage.renderAndPaintToGraphics2D(gfx);
-    }
-
-    /**
-     * The method that renders.
-     */
-    protected void render3D()
+    protected void renderAll()
     {
         // Get GL and clear
         GL2 gl = getGL2();
@@ -102,23 +121,9 @@ public class JGLRenderer extends Renderer {
         int viewH = drawable.getSurfaceHeight();
         gl.glViewport(0, 0, viewW, viewH);
 
-        // Get projection transform and set
-        Camera camera = getCamera();
-        double[] projTrans = camera.getCameraToClipArray();
-        gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadMatrixd(projTrans, 0);
-
-        // Get camera transform and set
-        double[] sceneToCamera = camera.getSceneToCameraArray();
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadMatrixd(sceneToCamera, 0);
-
         // Iterate over scene shapes and render each
         Scene3D scene = getScene();
         renderShape3D(scene);
-
-        // Paint axes
-        JoglUtils.render3DAxisLines(gl, 3, 100);
     }
 
     /**
@@ -149,59 +154,158 @@ public class JGLRenderer extends Renderer {
     }
 
     /**
-     * Renders a VertexBuffer of triangles.
+     * Renders the given triangle VertexArray.
      */
     protected void renderTriangleArray(VertexArray aTriangleArray)
     {
-        // Get Vertex points components array
-        float[] pointsArray = aTriangleArray.getPointArray();
-        if (pointsArray.length == 0)
-            return;
-
-        // Get Vertex color components array
-        float[] colorsArray = aTriangleArray.isColorArraySet() ? aTriangleArray.getColorArray() : null;
-
         // Get GL
         GL2 gl = getGL2();
         boolean doubleSided = aTriangleArray.isDoubleSided();
         if (doubleSided)
             gl.glDisable(GL.GL_CULL_FACE);
 
-        // Start GL rendering for triangles
-        gl.glBegin(GL.GL_TRIANGLES);
+        // Get shader Program
+        JGLProgram program = getProgram(aTriangleArray);
 
-        // If no color components, set global color
-        if (colorsArray == null) {
-            Color color = aTriangleArray.getColor();
-            if (color != null)
-                gl.glColor4d(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-            else System.err.println("JGLRenderer.renderVertexArray: No colors defined for VertexArray");
+        // Use this program
+        program.useProgram();
+
+        // Set VertexShader Projection Matrix
+        Camera camera = getCamera();
+        double[] projMatrix = camera.getCameraToClipArray();
+        program.setProjectionMatrix(projMatrix);
+
+        // Set VertexShader Model Matrix
+        double[] sceneToCamera = camera.getSceneToCameraArray();
+        program.setViewMatrix(sceneToCamera);
+
+        // Set VertexShader points
+        float[] pointsArray = aTriangleArray.getPointArray();
+        program.setPoints(pointsArray);
+
+        // Set VertexShader color
+        Color color = aTriangleArray.getColor();
+        float[] colors = aTriangleArray.getColorArray();
+        if (aTriangleArray.isColorArraySet())
+            program.setColors(colors);
+        else program.setColor(color);
+
+        // Set VertexShader texture coords
+        Texture texture = aTriangleArray.getTexture();
+        float[] texCoords = aTriangleArray.getTexCoordArray();
+        if (texture != null && texCoords != null && texCoords.length > 0) {
+            com.jogamp.opengl.util.texture.Texture joglTexture = getTexture(texture);
+            program.setTexture(joglTexture);
+            program.setTexCoords(texCoords);
         }
 
-        // Iterate over triangles and paint
-        for (int i = 0, iMax = aTriangleArray.getPointCount(), pointIndex = 0, colorIndex = 0; i < iMax; i++) {
-
-            // Get/set vertex color (if present)
-            if (colorsArray != null) {
-                float red = colorsArray[colorIndex++];
-                float green = colorsArray[colorIndex++];
-                float blue = colorsArray[colorIndex++];
-                gl.glColor4f(red, green, blue, 1);
-            }
-
-            // Get/set vertex point
-            float px = pointsArray[pointIndex++];
-            float py = pointsArray[pointIndex++];
-            float pz = pointsArray[pointIndex++];
-            gl.glVertex3d(px, py, pz);
+        // Set IndexArray
+        if (aTriangleArray.isIndexArraySet()) {
+            int[] indexArray = aTriangleArray.getIndexArray();
+            program.setIndexArray(indexArray);
         }
 
-        // Close
-        gl.glEnd();
+        // Run program
+        program.runProgram();
 
         // Restore
         if (doubleSided)
             gl.glEnable(GL.GL_CULL_FACE);
+    }
+
+    /**
+     * Returns a ShaderProgram for VertexArray.
+     */
+    public JGLProgram getProgram(VertexArray aVertexArray)
+    {
+        // If shader exists, return
+        String name = getShaderString(aVertexArray);
+        JGLProgram program = _programs.get(name);
+        if (program != null)
+            return program;
+
+        // Create, set and return
+        program = new JGLProgram(aVertexArray, this);
+        _programs.put(name, program);
+        return program;
+    }
+
+    /**
+     * Returns a VertexShader for given VertexArray.
+     */
+    public JGLShader getVertexShader(VertexArray aVertexArray)
+    {
+        // If shader exists, return
+        String name = getShaderString(aVertexArray);
+        JGLShader shader = _vertShaders.get(name);
+        if (shader != null)
+            return shader;
+
+        // Create, set and return
+        shader = new JGLShader(JGLShader.ShaderType.Vertex, name, this);
+        _vertShaders.put(name, shader);
+        return shader;
+    }
+
+    /**
+     * Returns a Fragment Shader for given VertexArray.
+     */
+    public JGLShader getFragmentShader(VertexArray aVertexArray)
+    {
+        // If shader exists, return
+        String name = getShaderString(aVertexArray);
+        JGLShader shader = _fragShaders.get(name);
+        if (shader != null)
+            return shader;
+
+        // Create, set and return
+        shader = new JGLShader(JGLShader.ShaderType.Fragment, name, this);
+        _fragShaders.put(name, shader);
+        return shader;
+    }
+
+    /**
+     * Returns a JOGL texture for given Snap texture.
+     */
+    public com.jogamp.opengl.util.texture.Texture getTexture(Texture aTexture)
+    {
+        // Get from Textures map (Just return if found)
+        com.jogamp.opengl.util.texture.Texture joglTexture = _textures.get(aTexture);
+        if (joglTexture != null)
+            return joglTexture;
+
+        // Get BufferedImage and flip for OpenGL
+        Image image = aTexture.getImage();
+        BufferedImage awtImage = (BufferedImage) image.getNative();
+
+        // Make sure texture is flipped
+        if (!aTexture.isFlipped()) {
+            ImageUtil.flipImageVertically(awtImage);
+            aTexture.setFlipped(true);
+        }
+
+        // Create JOGLTexture from image
+        GLProfile profile = getDrawable().getGLProfile();
+        joglTexture = AWTTextureIO.newTexture(profile, awtImage, false);
+
+        // Add to textures map and return
+        _textures.put(aTexture, joglTexture);
+        return joglTexture;
+    }
+
+    /**
+     * Returns a unique string.
+     */
+    public String getShaderString(VertexArray aVertexArray)
+    {
+        // Handle TexCoordArray set
+        boolean hasTexCoords = aVertexArray.isTexCoordArraySet();
+        if (hasTexCoords)
+            return "Points_Color_Tex";
+
+        // Handle ColorArray set
+        boolean hasColors = aVertexArray.isColorArraySet();
+        return hasColors ? "Points_Colors" : "Points_Color";
     }
 
     /**
@@ -266,7 +370,7 @@ public class JGLRenderer extends Renderer {
          */
         public Renderer newRenderer(Camera aCamera)
         {
-            return new JGLRendererX(aCamera);
+            return new JGLRenderer(aCamera);
         }
     }
 }

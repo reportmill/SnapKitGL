@@ -8,7 +8,7 @@ import snap.util.SnapUtils;
 public class JGLShader {
 
     // The renderer
-    private JGLRendererX _rjx;
+    private JGLRenderer  _rjx;
 
     // The Shader type
     private ShaderType  _type;
@@ -25,7 +25,7 @@ public class JGLShader {
     /**
      * Creates a shader of given type for given Renderer.
      */
-    public JGLShader(ShaderType aType, String aName, JGLRendererX aRJX)
+    public JGLShader(ShaderType aType, String aName, JGLRenderer aRJX)
     {
         _rjx = aRJX;
         _type = aType;
