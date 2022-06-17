@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jogamp.opengl.*;
-import snap.util.PropChange;
+import snap.props.PropChange;
 
 /**
  * A Renderer implementation for OpenGL with JOGL.
