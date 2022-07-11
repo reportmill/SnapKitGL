@@ -153,6 +153,7 @@ public class RenderImage implements GLEventListener {
         gl2.glClearColor(0f, 0f, 0f, 0f);
         gl2.glEnable(GL.GL_DEPTH_TEST);
         gl2.glEnable(GL.GL_CULL_FACE);
+        gl2.glEnable(GL.GL_MULTISAMPLE);
     }
 
     /**
