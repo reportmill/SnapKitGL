@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.util.texture.Texture;
 import snap.gfx.Color;
 import snap.gfx3d.VertexArray;
-import snap.util.ArrayUtils;
+import snap.util.Convert;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -142,7 +142,7 @@ public class JGLProgram {
         GL2 gl2 = _rjx.getGL2();
 
         // Get matrix as 4fv
-        float[] matrix4fv = ArrayUtils.floatArray(aMatrix);
+        float[] matrix4fv = Convert.floatArray(aMatrix);
 
         // Set ProjMatrix
         int projMatrixUniform = gl2.glGetUniformLocation(programId, "projMatrix");
@@ -159,7 +159,7 @@ public class JGLProgram {
         GL2 gl2 = _rjx.getGL2();
 
         // Get matrix as 4fv
-        float[] matrix4fv = ArrayUtils.floatArray(aMatrix);
+        float[] matrix4fv = Convert.floatArray(aMatrix);
 
         // Get ViewMatrix uniform and set
         int viewMatrixUniform = gl2.glGetUniformLocation(programId, "viewMatrix");
