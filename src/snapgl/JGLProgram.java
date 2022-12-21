@@ -142,7 +142,7 @@ public class JGLProgram {
         GL2 gl2 = _rjx.getGL2();
 
         // Get matrix as 4fv
-        float[] matrix4fv = Convert.floatArray(aMatrix);
+        float[] matrix4fv = Convert.doubleArrayToFloat(aMatrix);
 
         // Set ProjMatrix
         int projMatrixUniform = gl2.glGetUniformLocation(programId, "projMatrix");
@@ -159,7 +159,7 @@ public class JGLProgram {
         GL2 gl2 = _rjx.getGL2();
 
         // Get matrix as 4fv
-        float[] matrix4fv = Convert.floatArray(aMatrix);
+        float[] matrix4fv = Convert.doubleArrayToFloat(aMatrix);
 
         // Get ViewMatrix uniform and set
         int viewMatrixUniform = gl2.glGetUniformLocation(programId, "viewMatrix");
