@@ -30,7 +30,10 @@ public class DrawableUtils {
 
         // Configure basic multi-sampling
         glCaps.setSampleBuffers(true);
-        glCaps.setNumSamples(8);
+        glCaps.setNumSamples(4);
+
+        // Increase depth buffer
+        glCaps.setDepthBits(24);
 
         // Don't know why we do this
         glCaps.setAlphaBits(8);
