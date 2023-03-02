@@ -2,11 +2,8 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package snapgl;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
-import jogamp.opengl.GLDrawableHelper;
 import snap.gfx.GFXEnv;
-import java.awt.*;
 
 /**
  * Handy JOGL utility methods.
@@ -50,32 +47,8 @@ public class DrawableUtils {
      */
     public static GLAutoDrawable createOffScreenDrawableDefault(GLCapabilities glCaps, int aW, int aH)
     {
-        return createOffScreenGLWindow(glCaps, aW, aH);
-        //return createOffScreenDrawable(glCaps, aW, aH);
-    }
-
-    /**
-     * Returns an offscreen GLWindow as work around for multi-sampling on mac.
-     */
-    public static GLWindow createOffScreenGLWindow(GLCapabilities glCaps, int aW, int aH)
-    {
-        // Make sure capabilities are set
-        if (glCaps == null)
-            glCaps = getDefaultOffscreenCapabilities();
-
-        // Create/configure window and return
-        GLWindow glWindow = GLWindow.create(glCaps);
-        glWindow.setUndecorated(true);
-        glWindow.setSize(aW, aH);
-
-        // Need window visible to work, but try to keep it hidden
-        int screenH = Toolkit.getDefaultToolkit().getScreenSize().height;
-        glWindow.setPosition(0, screenH - 1);
-        glWindow.setVisible(true);
-        glWindow.setPosition(0, screenH + 1);
-
-        // Return
-        return glWindow;
+        //return createOffScreenGLWindow(glCaps, aW, aH); // Once needed for MacOS problems
+        return createOffScreenDrawable(glCaps, aW, aH);
     }
 
     /**
@@ -87,9 +60,6 @@ public class DrawableUtils {
         if (glCaps == null)
             glCaps = getDefaultOffscreenCapabilities();
         GLProfile profile = glCaps.getGLProfile();
-
-        // Turn off multi-sampling, otherwise Mac will freeze painting
-        glCaps.setSampleBuffers(false);
 
         // Get size for screen scale
         double screenScale = GFXEnv.getEnv().getScreenScale();
@@ -109,21 +79,11 @@ public class DrawableUtils {
      */
     public static void resizeDrawable(GLAutoDrawable drawable, int aWidth, int aHeight)
     {
-        // Handle GLWindow
-        if (drawable instanceof GLWindow) {
-
-            // Get window and make sure context is set
-            GLWindow glWindow = (GLWindow) drawable;
-            GL gl = glWindow.getGL();
-            GLContext glc = gl.getContext();
-            glc.makeCurrent();
-
-            // Resize window
-            new GLDrawableHelper().reshape(glWindow, 0, 0, aWidth, aHeight);
-        }
+//        // Handle GLWindow
+//        if (drawable instanceof GLWindow) { resizeGLWindow((GLWindow) drawable, aWidth, aHeight); return; }
 
         // Handle GLOffscreenAutoDrawable
-        else if (drawable instanceof GLOffscreenAutoDrawable) {
+        if (drawable instanceof GLOffscreenAutoDrawable) {
             double screenScale = GFXEnv.getEnv().getScreenScale();
             int pixW = (int) Math.round(aWidth * screenScale);
             int pixH = (int) Math.round(aHeight * screenScale);
@@ -132,6 +92,44 @@ public class DrawableUtils {
         }
 
         // Handle unknown
-        else System.out.println("RenderJOGL.resizeDrawable: Unknown drawable class: " + drawable.getClass());
+        else System.out.println("DrawableUtils.resizeDrawable: Unknown drawable class: " + drawable.getClass());
     }
+
+//    /**
+//     * Returns offscreen GLWindow as work around for multi-sampling on mac. Otherwise, try glCaps.setSampleBuffers(false);
+//     */
+//    public static GLWindow createOffScreenGLWindow(GLCapabilities glCaps, int aW, int aH)
+//    {
+//        // Make sure capabilities are set
+//        if (glCaps == null)
+//            glCaps = getDefaultOffscreenCapabilities();
+//
+//        // Create/configure window and return
+//        GLWindow glWindow = GLWindow.create(glCaps);
+//        glWindow.setUndecorated(true);
+//        glWindow.setSize(aW, aH);
+//
+//        // Need window visible to work, but try to keep it hidden
+//        int screenH = Toolkit.getDefaultToolkit().getScreenSize().height;
+//        glWindow.setPosition(0, screenH - 1);
+//        glWindow.setVisible(true);
+//        glWindow.setPosition(0, screenH + 1);
+//
+//        // Return
+//        return glWindow;
+//    }
+//
+//    /**
+//     * Resizes drawable.
+//     */
+//    public static void resizeGLWindow(GLWindow glWindow, int aWidth, int aHeight)
+//    {
+//        // Get window and make sure context is set
+//        GL gl = glWindow.getGL();
+//        GLContext glc = gl.getContext();
+//        glc.makeCurrent();
+//
+//        // Resize window
+//        new GLDrawableHelper().reshape(glWindow, 0, 0, aWidth, aHeight);
+//    }
 }
