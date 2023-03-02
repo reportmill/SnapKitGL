@@ -35,6 +35,8 @@ public class DrawableUtils {
 
         // Increase depth buffer
         glCaps.setDepthBits(24);
+        glCaps.setHardwareAccelerated(true);
+        glCaps.setOnscreen(false);
 
         // Don't know why we do this
         glCaps.setAlphaBits(8);
@@ -72,7 +74,7 @@ public class DrawableUtils {
 
         // Create drawable
         GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
-        GLAutoDrawable drawable = factory.createOffscreenAutoDrawable(null, glCaps, null, winW, winH);
+        GLAutoDrawable drawable = factory.createOffscreenAutoDrawable(factory.getDefaultDevice(), glCaps, null, winW, winH);
 
         // Return
         return drawable;
