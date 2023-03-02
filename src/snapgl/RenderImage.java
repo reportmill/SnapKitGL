@@ -91,8 +91,13 @@ public class RenderImage implements GLEventListener {
      */
     public void renderAll()
     {
-        GLAutoDrawable drawable = getDrawable();
-        drawable.display();
+        try {
+            GLAutoDrawable drawable = getDrawable();
+            drawable.display();
+        }
+        catch (Exception e) {
+            System.err.println("RenderImage.renderAll: " + e);
+        }
     }
 
     /**

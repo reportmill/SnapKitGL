@@ -3,6 +3,7 @@
  */
 package snapgl;
 import com.jogamp.opengl.*;
+import jogamp.opengl.GLDrawableHelper;
 import snap.gfx.GFXEnv;
 
 /**
@@ -82,20 +83,13 @@ public class DrawableUtils {
      */
     public static void resizeDrawable(GLAutoDrawable drawable, int aWidth, int aHeight)
     {
-//        // Handle GLWindow
-//        if (drawable instanceof GLWindow) { resizeGLWindow((GLWindow) drawable, aWidth, aHeight); return; }
+        // Make sure drawable context is set
+        GL gl = drawable.getGL();
+        GLContext glc = gl.getContext();
+        glc.makeCurrent();
 
-        // Handle GLOffscreenAutoDrawable
-        if (drawable instanceof GLOffscreenAutoDrawable) {
-            double screenScale = GFXEnv.getEnv().getScreenScale();
-            int pixW = (int) Math.round(aWidth * screenScale);
-            int pixH = (int) Math.round(aHeight * screenScale);
-            GLOffscreenAutoDrawable offscreenAutoDrawable = (GLOffscreenAutoDrawable) drawable;
-            offscreenAutoDrawable.setSurfaceSize(pixW, pixH);
-        }
-
-        // Handle unknown
-        else System.out.println("DrawableUtils.resizeDrawable: Unknown drawable class: " + drawable.getClass());
+        // Reshape
+        new GLDrawableHelper().reshape(drawable, 0, 0, aWidth, aHeight);
     }
 
 //    /**
@@ -123,16 +117,13 @@ public class DrawableUtils {
 //    }
 //
 //    /**
-//     * Resizes drawable.
+//     * Resize GLOffscreenAutoDrawable.
 //     */
-//    public static void resizeGLWindow(GLWindow glWindow, int aWidth, int aHeight)
+//    public static void resizeGLOffscreenAutoDrawable(GLOffscreenAutoDrawable offscreenDrawable, int aWidth, int aHeight)
 //    {
-//        // Get window and make sure context is set
-//        GL gl = glWindow.getGL();
-//        GLContext glc = gl.getContext();
-//        glc.makeCurrent();
-//
-//        // Resize window
-//        new GLDrawableHelper().reshape(glWindow, 0, 0, aWidth, aHeight);
+//        double screenScale = GFXEnv.getEnv().getScreenScale();
+//        int pixW = (int) Math.round(aWidth * screenScale);
+//        int pixH = (int) Math.round(aHeight * screenScale);
+//        offscreenDrawable.setSurfaceSize(pixW, pixH);
 //    }
 }
