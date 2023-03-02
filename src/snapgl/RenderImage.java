@@ -3,7 +3,6 @@
  */
 package snapgl;
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.util.awt.AWTGLPixelBuffer;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -74,12 +73,7 @@ public class RenderImage implements GLEventListener {
             _glReadUtil = new AWTGLReadBufferUtil(gl.getGLProfile(), true);
 
         // Read to image
-        _glReadUtil.getTextureData();
         BufferedImage img = _glReadUtil.readPixelsToBufferedImage(gl, true);
-
-        try { Thread.sleep(50); }
-        catch (Exception e) { }
-
         return img;
     }
 
