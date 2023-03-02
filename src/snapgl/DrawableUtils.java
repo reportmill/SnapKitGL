@@ -84,8 +84,7 @@ public class DrawableUtils {
     public static void resizeDrawable(GLAutoDrawable drawable, int aWidth, int aHeight)
     {
         // Make sure drawable context is set
-        GL gl = drawable.getGL();
-        GLContext glc = gl.getContext();
+        GLContext glc = drawable.getContext();
         glc.makeCurrent();
 
         // Reshape
