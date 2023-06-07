@@ -341,22 +341,6 @@ public class JGLRenderer extends Renderer {
     }
 
     /**
-     * Registers factory.
-     */
-    public static void registerFactory()
-    {
-        // If already set, just return
-        for (RendererFactory factory : RendererFactory.getFactories())
-            if (factory.getClass() == JGLRendererFactory.class)
-                return;
-
-        // Create, add and setDefault
-        RendererFactory joglFactory = new JGLRendererFactory();
-        RendererFactory.addFactory(joglFactory);
-        RendererFactory.setDefaultFactory(joglFactory);
-    }
-
-    /**
      * A RendererFactory implementation for JGLRenderer.
      */
     public static class JGLRendererFactory extends RendererFactory {
