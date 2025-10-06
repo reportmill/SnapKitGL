@@ -25,7 +25,7 @@ dependencies {
     // JOML (Java OpenGL Math Library)
     implementation "org.joml:joml:${jomlVersion}"
 
-    implementation files('/Users/jeff/Dev/libs/jogamp-fat-2023.02.01.jar')
+    implementation files('/Users/jeff/Dev/libs/jogamp-fat-2025.08.31.jar')
 
     //implementation group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.3.2'
     //implementation group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.3.2'
